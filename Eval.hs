@@ -1,4 +1,4 @@
-{-# LANGUAGE Rank2Types, TypeOperators, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE Rank2Types, TypeOperators, GeneralizedNewtypeDeriving, StandaloneDeriving #-}
 
 module Eval where
 
@@ -14,6 +14,7 @@ import Loader
 import Dsl
 import Optimizer(solve)
 import Free
+import Debug.Trace
 
 --type f ~> g = forall x . f x -> g x
 
@@ -21,7 +22,9 @@ data RuleExprEvalState = RuleExprEvalState {
     currentAmount :: Amount,
     cache :: Map Key Value,
     loaders :: [Loader]
-  } 
+  }
+
+deriving instance Show RuleExprEvalState
 
 newtype RuleExprEvalT a = RuleExprEvalT { 
     runRuleExpr :: ExceptT String (StateT RuleExprEvalState IO) a 
@@ -76,7 +79,10 @@ ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO Amount
 ruleI r = \amount initKeyValues loaders -> do
     let initKeys = Set.fromList $ Map.keys initKeyValues
     let requiredKeys = Set.fromList $ getRuleKeys' r
+    putStrLn $ "initKeys="++show initKeys
+    putStrLn $ "requiredKeys="++show requiredKeys
     let loaders' = solve initKeys requiredKeys loaders
+    putStrLn $ "loaders="++show loaders'
     let initState = RuleExprEvalState {
         currentAmount = amount,
         cache = initKeyValues,
@@ -91,7 +97,10 @@ evalR' (Rule name expr) state =
     let 
         expr' = Free.interp ruleExprI expr
     in do
+        putStrLn $ "Eval rule " ++ name
+        putStrLn $ "  state=" ++ show state
         (errorOrAmount,state') <- runStateT (runExceptT $ runRuleExpr expr') state 
+        putStrLn $ "  state'=" ++ show state'
         case errorOrAmount of
             Left str -> error $ "exception:" ++ str
             Right amount' -> return (amount',state')

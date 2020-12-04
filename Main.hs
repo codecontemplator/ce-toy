@@ -12,6 +12,12 @@ import Types
 loaders :: [Loader]
 loaders = [
     Loader { 
+      name = "zero", cost = 0, 
+      input = Set.fromList [ "NationalId" ], 
+      output = Set.fromList [ "Age" ],
+      load = (\_ -> return $ Map.fromList [("Age",IntValue 80)])
+    },
+    Loader { 
       name = "small", cost = 1, 
       input = Set.fromList [ "NationalId" ], 
       output = Set.fromList [ "Name", "Address" ],
@@ -26,8 +32,8 @@ loaders = [
     Loader {
       name = "large", cost = 3, 
       input = Set.fromList [ "NationalId" ], 
-      output = Set.fromList [ "Name", "Address", "Salary", "NumReminders", "NumChildren" ],
-      load = (\_ -> return $ Map.fromList [("Name",StringValue "Pelle"),("Address",StringValue "Storgatan 20"),("Salary",IntValue 300),("NumReminders",IntValue 1),("NumChildren",IntValue 2)])
+      output = Set.fromList [ "Name", "Address", "Salary", "NumReminders", "NumChildren", "CreditA", "CreditB" ],
+      load = (\_ -> return $ Map.fromList [("Name",StringValue "Pelle"),("Address",StringValue "Storgatan 20"),("Salary",IntValue 300),("NumReminders",IntValue 1),("NumChildren",IntValue 2),("CreditA",IntValue 10),("CreditB", IntValue 0)])
     }, 
     Loader {
       name = "scoring", cost = 0, 
