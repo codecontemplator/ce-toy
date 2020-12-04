@@ -2,6 +2,8 @@
 
 module Eval where
 
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Control.Monad.State.Class
@@ -11,8 +13,9 @@ import Types
 import Loader
 import Dsl
 import Optimizer(solve)
+import Free
 
-type f ~> g = forall x . f x -> g x
+--type f ~> g = forall x . f x -> g x
 
 data RuleExprEvalState = RuleExprEvalState {
     currentAmount :: Amount,
@@ -57,29 +60,45 @@ ruleExprI (GetAmount next) = do
     amount <- getAmount'
     return $ next amount
 
+-- assumption : get value commands are not conditional on neither amount not other variable values
+getRuleExprKeys' :: RuleExpr a -> [String]
+getRuleExprKeys' (Pure a) = []
+getRuleExprKeys' (Free f) = 
+    case f of
+        (GetIntValue key next) -> key : getRuleExprKeys' (next 0)
+        (GetAmount next)       -> getRuleExprKeys' (next 0)
+
+getRuleKeys' :: Rule -> [String]
+getRuleKeys' (Rule _ expr) = getRuleExprKeys' expr
+getRuleKeys' (RAndThen r1 r2) = getRuleKeys' r1 ++ getRuleKeys' r2
+
 ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO Amount
 ruleI r = \amount initKeyValues loaders -> do
-    let initKeys = Map.getKeys initKeyValues -- todo
-    let requiredKeys = Rule.getKeys r   -- todo
+    let initKeys = Set.fromList $ Map.keys initKeyValues
+    let requiredKeys = Set.fromList $ getRuleKeys' r
     let loaders' = solve initKeys requiredKeys loaders
     let initState = RuleExprEvalState {
         currentAmount = amount,
         cache = initKeyValues,
         loaders = loaders'
     }
-    evalR r initState
+    (amount,_) <- evalR' r initState
+    return amount
 
 -- https://repl.it/@daniel_brannstrom/CredEvalTest#eval.hs
-evalR :: Rule -> RuleExprEvalState -> IO (Amount,RuleExprEvalState)
-evalR (Rule name expr) state =  
+evalR' :: Rule -> RuleExprEvalState -> IO (Amount,RuleExprEvalState)
+evalR' (Rule name expr) state =  
     let 
-        expr' = ruleExprI expr
-        (amount',state') = runStateT (runExceptT $ runRuleExpr expr') state 
-    in 
-        return (amount',state')
-evalR (Rule r1 r2) state = do
-  state' <- evalR r1 state
+        expr' = Free.interp ruleExprI expr
+    in do
+        (errorOrAmount,state') <- runStateT (runExceptT $ runRuleExpr expr') state 
+        case errorOrAmount of
+            Left str -> error $ "exception:" ++ str
+            Right amount' -> return (amount',state')
+
+evalR' (RAndThen r1 r2) state = do
+  (amount,state') <- evalR' r1 state
   let state'' = state' {
       currentAmount = amount
   }
-  evalR r2 state''
+  evalR' r2 state''

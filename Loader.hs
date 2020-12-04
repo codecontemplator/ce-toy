@@ -9,8 +9,6 @@ import qualified Data.Set as Set
 import Types
 import Optimizer
 
-type KeySet = Set Key
-
 data Loader = Loader { 
     name :: String, 
     cost :: Int, 
