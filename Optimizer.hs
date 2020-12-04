@@ -41,5 +41,6 @@ genSolve curNode goalNode edges =
       (w,es') <- genSolve (transition curNode e) goalNode (es ++ indirectEdges)
       return (w + weight e, e:es')
 
+-- todo: minimumBy assumes there is a solution (will result in a runtime exception foldl on empty list otherwise)
 solve :: Edge e n => n -> n -> [e] -> [e]
 solve curNode goalNode edges = snd $ minimumBy (compare `on` fst) (genSolve curNode goalNode edges)
