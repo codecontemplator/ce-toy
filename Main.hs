@@ -15,7 +15,7 @@ loaders = [
       name = "zero", cost = 0, 
       input = Set.fromList [ "NationalId" ], 
       output = Set.fromList [ "Age" ],
-      load = (\_ -> return $ Map.fromList [("Age",IntValue 80)])
+      load = (\_ -> return $ Map.fromList [("Age",IntValue 90)])
     },
     Loader { 
       name = "small", cost = 1, 
@@ -47,7 +47,7 @@ main :: IO ()
 main = do
     putStrLn "Start!"
     let f = ruleI ceProcessExample
-    let amount = 800
+    let amount = 1800
     let initKeyValues = Map.fromList [("NationalId", StringValue "29840113")]  -- could reach out for local cache for more data
     amount' <- f amount initKeyValues loaders
     putStrLn $ "amount=" ++ show amount'

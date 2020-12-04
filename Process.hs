@@ -7,7 +7,7 @@ absoluteMaxAmount :: Amount -> RuleExpr Amount
 absoluteMaxAmount amountLimit = do
     amount <- getAmount
     if amount > amountLimit then 
-        return 0
+        return amountLimit
     else
         return amount
     
@@ -16,7 +16,7 @@ maxAmountForAge amountLimit ageLimit = do
     age <- getIntValue "Age"
     amount <- getAmount
     if age > ageLimit && amount > amountLimit then
-        return 0
+        return amountLimit
     else
         return amount
     
