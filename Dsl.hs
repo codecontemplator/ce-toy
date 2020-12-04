@@ -7,6 +7,7 @@ import Free
 
 data RuleExprF a = 
       GetIntValue Key (Int -> a) 
+    | GetStringValue Key (String -> a)
     | GetAmount (Amount -> a)  
         deriving Functor
 
@@ -14,6 +15,9 @@ type RuleExpr = Free RuleExprF
 
 getIntValue :: Key -> RuleExpr Int
 getIntValue key = liftF $ GetIntValue key id
+
+getStringValue :: Key -> RuleExpr String
+getStringValue key = liftF $ GetStringValue key id
 
 getAmount :: RuleExpr Amount
 getAmount = liftF $ GetAmount id

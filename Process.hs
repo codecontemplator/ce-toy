@@ -28,9 +28,18 @@ maxTotalDebt debtLimit = do
         return 0
     else
         getAmount
-    
+
+hasAddress :: RuleExpr Amount
+hasAddress = do
+    address <- getStringValue "Address"
+    if address == "" then
+        return 0
+    else
+        getAmount
+
 ceProcessExample :: Rule
 ceProcessExample =
     rule "absoluteMaxAmount" (absoluteMaxAmount 1000) `andThen`
     rule "maxAmountForAge" (maxAmountForAge 750 85) `andThen`
-    rule "maxTotalDebt" (maxTotalDebt 500)    
+    rule "maxTotalDebt" (maxTotalDebt 500) `andThen`
+    rule "hasAddress" hasAddress   

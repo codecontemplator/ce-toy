@@ -52,12 +52,22 @@ getIntValue' key = do
         IntValue intValue -> return intValue
         _ -> throwError $ "invalid type"
 
+getStringValue' :: Key -> RuleExprEvalT String
+getStringValue' key = do
+    value <- getValue key
+    case value of 
+        StringValue strValue -> return strValue
+        _ -> throwError $ "invalid type"
+
 getAmount' :: RuleExprEvalT Amount
 getAmount' = currentAmount <$> get
 
 ruleExprI :: RuleExprF ~> RuleExprEvalT
 ruleExprI (GetIntValue key next) = do
     iv <- getIntValue' key 
+    return $ next iv
+ruleExprI (GetStringValue key next) = do
+    iv <- getStringValue' key 
     return $ next iv
 ruleExprI (GetAmount next) = do
     amount <- getAmount'
@@ -69,6 +79,7 @@ getRuleExprKeys' (Pure a) = []
 getRuleExprKeys' (Free f) = 
     case f of
         (GetIntValue key next) -> key : getRuleExprKeys' (next 0)
+        (GetStringValue key next) -> key : getRuleExprKeys' (next "")
         (GetAmount next)       -> getRuleExprKeys' (next 0)
 
 getRuleKeys' :: Rule -> [String]
