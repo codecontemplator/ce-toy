@@ -45,10 +45,8 @@ loaders = [
 
 main :: IO ()
 main = do
-    putStrLn "Start!"
     let f = ruleI ceProcessExample
     let amount = 1800
     let initKeyValues = Map.fromList [("NationalId", StringValue "29840113")]  -- could reach out for local cache for more data
-    amount' <- f amount initKeyValues loaders
-    putStrLn $ "amount=" ++ show amount'
-    putStrLn "Done!"
+    result <- f amount initKeyValues loaders
+    putStrLn $ "result=" ++ show result

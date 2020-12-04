@@ -9,6 +9,7 @@ import qualified Data.Map as Map
 import Control.Monad.State.Class
 import Control.Monad.Except
 import Control.Monad.State.Lazy
+import Control.Monad.Writer.Lazy
 import Types
 import Loader
 import Dsl
@@ -86,35 +87,33 @@ getRuleKeys' :: Rule -> [String]
 getRuleKeys' (Rule _ expr) = getRuleExprKeys' expr
 getRuleKeys' (RAndThen r1 r2) = getRuleKeys' r1 ++ getRuleKeys' r2
 
-ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO Amount
+ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO (Amount,[Decision])
 ruleI r = \amount initKeyValues loaders -> do
     let initKeys = Set.fromList $ Map.keys initKeyValues
     let requiredKeys = Set.fromList $ getRuleKeys' r
-    putStrLn $ "initKeys="++show initKeys
-    putStrLn $ "requiredKeys="++show requiredKeys
     let loaders' = solve initKeys requiredKeys loaders
-    putStrLn $ "loaders="++show loaders'
     let initState = RuleExprEvalState {
         currentAmount = amount,
         cache = initKeyValues,
         loaders = loaders'
     }
-    (amount,_) <- evalR' r initState
-    return amount
+    ((amount,_),decisionLog) <- runWriterT $ evalR' r initState
+    return (amount,decisionLog)
 
 -- https://repl.it/@daniel_brannstrom/CredEvalTest#eval.hs
-evalR' :: Rule -> RuleExprEvalState -> IO (Amount,RuleExprEvalState)
+evalR' :: Rule -> RuleExprEvalState -> WriterT [Decision] IO (Amount,RuleExprEvalState)
 evalR' (Rule name expr) state =  
     let 
         expr' = Free.interp ruleExprI expr
     in do
-        putStrLn $ "Eval rule " ++ name
-        putStrLn $ "  state=" ++ show state
-        (errorOrAmount,state') <- runStateT (runExceptT $ runRuleExpr expr') state 
-        putStrLn $ "  state'=" ++ show state'
+        (errorOrAmount,state') <- lift $ runStateT (runExceptT $ runRuleExpr expr') state 
         case errorOrAmount of
-            Left str -> error $ "exception:" ++ str
-            Right amount' -> return (amount',state')
+            (Left str) -> do
+                tell $ [ ("Failed to evaluate rule " ++ name ++ ". " ++ str, currentAmount state, 0) ]
+                return (0,state')
+            (Right amount') -> do 
+                tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
+                return (amount',state')
 
 evalR' (RAndThen r1 r2) state = do
   (amount,state') <- evalR' r1 state
