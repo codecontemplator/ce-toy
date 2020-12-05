@@ -1,7 +1,27 @@
+{-# LANGUAGE RebindableSyntax #-}
+
 module Process where
 
+import Prelude
 import Types
 import Dsl
+
+class IfThenElse b where
+  ifThenElse :: b -> RuleExpr a -> RuleExpr a -> RuleExpr a
+
+instance IfThenElse Bool where
+  ifThenElse b t f = ifB b t f
+
+conditionalLookupTest :: Amount -> RuleExpr Amount
+conditionalLookupTest amountLimit = do
+    age <- getIntValue "Age"
+    if age < 20 then do
+        amount <- getAmount
+        return $ min amount amountLimit
+    else do
+        name <- getStringValue "Name"
+        amount <- getAmount
+        return $ amount + length name + 123
 
 absoluteMaxAmount :: Amount -> RuleExpr Amount
 absoluteMaxAmount amountLimit = do
@@ -36,6 +56,7 @@ hasAddress = do
 
 ceProcessExample :: Rule
 ceProcessExample =
+    rule "conditionalLookupTest" (conditionalLookupTest 1000) `andThen`
     rule "absoluteMaxAmount" (absoluteMaxAmount 1000) `andThen`
     rule "maxAmountForAge" (maxAmountForAge 750 85) `andThen`
     rule "maxTotalDebt" (maxTotalDebt 500) `andThen`

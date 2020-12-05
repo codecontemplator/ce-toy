@@ -73,8 +73,13 @@ ruleExprI (GetStringValue key next) = do
 ruleExprI (GetAmount next) = do
     amount <- getAmount'
     return $ next amount
+ruleExprI (IfB b tNext fNext) = 
+    if b then 
+        Free.interp ruleExprI tNext
+    else 
+        Free.interp ruleExprI fNext
 
--- assumption : get value commands are not conditional on neither amount nor other variable values
+-- assumption: process uses rebindable if so that both true and false branches can be analyzed
 getRuleExprKeys' :: RuleExpr a -> [String]
 getRuleExprKeys' (Pure a) = []
 getRuleExprKeys' (Free f) = 
@@ -82,9 +87,12 @@ getRuleExprKeys' (Free f) =
         (GetIntValue key next) -> key : getRuleExprKeys' (next 0)
         (GetStringValue key next) -> key : getRuleExprKeys' (next "")
         (GetAmount next)       -> getRuleExprKeys' (next 0)
+        (IfB _ tNext fNext) -> getRuleExprKeys' tNext ++ getRuleExprKeys' fNext
 
 getRuleKeys' :: Rule -> [String]
-getRuleKeys' (Rule _ expr) = getRuleExprKeys' expr
+getRuleKeys' (Rule name expr) =
+    let keys = getRuleExprKeys' expr in
+    trace ("rule " ++ name ++ " has keys " ++ show keys) keys
 getRuleKeys' (RAndThen r1 r2) = getRuleKeys' r1 ++ getRuleKeys' r2
 
 ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO (Amount,[Decision])

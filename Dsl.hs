@@ -9,6 +9,7 @@ data RuleExprF a =
       GetIntValue Key (Int -> a) 
     | GetStringValue Key (String -> a)
     | GetAmount (Amount -> a)  
+    | IfB Bool (RuleExpr a) (RuleExpr a)
         deriving Functor
 
 type RuleExpr = Free RuleExprF
@@ -21,6 +22,9 @@ getStringValue key = liftF $ GetStringValue key id
 
 getAmount :: RuleExpr Amount
 getAmount = liftF $ GetAmount id
+
+ifB :: Bool -> RuleExpr a -> RuleExpr a -> RuleExpr a
+ifB b t f = liftF $ IfB b t f
 
 data Rule = Rule String (RuleExpr Amount) | RAndThen Rule Rule
 
