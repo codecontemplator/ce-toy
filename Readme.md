@@ -123,7 +123,49 @@ ceProcessExample =
     rule "absoluteMaxAmount" (absoluteMaxAmount 1000) `andThen`
     rule "maxTotalDebt" (maxTotalDebt 500)
 ```
+
+## Evaluation of rules
+
+Given the DSL for rules and rule expressions it is possible to construct data structures that represents a credit evaluation process. However, to actually evaluate it we need an interpreter.
+
+A possible signature for a rule interpreter is
+
+```haskell
+ruleI :: Rule -> Amount -> Map Key Value -> [Loader] -> IO Amount
+ruleI r = \requestedAmount knownParams allLoaders -> ...
+```
+
+In plain english this means
+
+> **ruleI** is a function that takes a credit evaluation process, expressed as a Rule, and returns an evaluation function. The evaluation function, in turn, takes the requested amount, the known data parameters for the applicant and the available data loaders and it returns the granted amount.
+
+Implementing the rule interpreter requires interpreting rule expressions. The rule expression, while simple, is a bit more technical. At its core is the implementation of retrieval of data parameters.
+
+```haskell
+getValue key = do
+    kvs <- cache <$> get
+    case Map.lookup key kvs of
+        Just value -> return value
+        Nothing -> do
+        ls <- loaders <$> get
+        case ls of
+            [] -> throwError $ "could not produce a value for key " ++ key
+            (l:ls') -> do
+            kvs' <- liftIO $ load l kvs          
+            modify (\s -> s { cache = Map.union kvs kvs', loaders = ls' })
+            getValue key
+```
+
+This function store a cache of all known parameters so far and a list of loaders. When a value is requested, the cache will first be queried. If the value exists in the cache the value is simply returned. If not, the first data loader in the list will be executed. The cache will be updated with the new values retrieved and getValue is executed again, recursively.
+
 ## Version control
 
 It is important to be able to track changes in the credit evaluation process. Due to the fact that it is simply a file we can use ordinary version control tools like git to handle that.
 
+# Putting the pieces together
+
+Main.hs in CE-toy defines a number of loaders (all in-memory, trivial ones). The main method applies ruleI to an example credit process called ceProcessExample and retrieves an evaluation function. The evaluation function is the invoked with a sample amount, a national id and the list of loaders.
+
+# Limitations and future work
+
+CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought throw nor implemented.
