@@ -21,7 +21,7 @@ Based on this observation retrieving of applicant data can be viewed as an optim
 
 > Given a set of known parameters and a set of required parameters we want to select a subset of all the available data loaders such that the cost is minimized while still all required parameters are provided.
 
-It should also be noted that, in case of a rejected application, all the rules might not be evaluated and thus the actually required parameters can be a subset of all the parameters used by the credit process. This indicates that some kind of lazy loading, or on demand loading, can be useful.
+It should also be noted that, in case of a rejected application, all the rules might not be evaluated and thus the actually required parameters can be a subset of all the parameters used by the credit process. This indicates that some kind of on demand loading can be useful.
 
 ## Modelling
 
@@ -60,7 +60,7 @@ The actual implementation has a slightly more general signature but, for the sak
 
 # Evaluation of credit process rules
 
-Credit rules might be intricate and to express them we need an expressive language. One option is to build up a new specialized language from scratch but that is both time consuming and hard. A common solution is instead to create a DSL (domain specific language) within the application programming language. That is the approach used here. A requirement from the data loading is that it must be possible to analyze the rules to find out which applicant data parameters that is used and thus might need to be loaded. One solution that satisfies these constraints is the free monad interpreter pattern. It might sound scary but when to use it does not require a deep understanding of the underlying mechanism. Instead it can just be seen as a pattern to follow.
+Credit rules might be intricate and to express them we need an expressive language. One option is to build up a new specialized language from scratch but that is both time consuming and hard. A common solution is instead to create a DSL (domain specific language) within the application programming language. That is the approach used here. A requirement from the data loading is that it must be possible to analyze the rules to find out which applicant data parameters that is used and thus might need to be loaded. One solution that satisfies these constraints is the free monad interpreter pattern. It might sound scary but using it in practice does not require a deep understanding of the underlying mechanism. Instead it can just be seen as a pattern to follow.
 
 The proposed DSL consists of *rules* and *rule expressions*. Rules are basically named rule expressions that can be linked together in a chain. 
 
