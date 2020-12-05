@@ -74,7 +74,7 @@ ruleExprI (GetAmount next) = do
     amount <- getAmount'
     return $ next amount
 
--- assumption : get value commands are not conditional on neither amount not other variable values
+-- assumption : get value commands are not conditional on neither amount nor other variable values
 getRuleExprKeys' :: RuleExpr a -> [String]
 getRuleExprKeys' (Pure a) = []
 getRuleExprKeys' (Free f) = 
