@@ -166,6 +166,10 @@ It is important to be able to track changes in the credit evaluation process. Du
 
 Main.hs in CE-toy defines a number of loaders (all in-memory, trivial ones). The main method applies ruleI to an example credit process called ceProcessExample and retrieves an evaluation function. The evaluation function is then invoked with a sample amount, a national id and the list of loaders.
 
+Executing main will produce the following output:
+
+> result=(750,[("Rule evaluated absoluteMaxAmount.",1800,1000),("Rule evaluated maxAmountForAge.",1000,750),("Rule evaluated maxTotalDebt.",750,750),("Rule evaluated hasAddress.",750,750)])
+
 # Limitations and future work
 
 CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought throw nor implemented.
