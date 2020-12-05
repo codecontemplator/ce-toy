@@ -115,7 +115,5 @@ evalR' (Rule name expr) state = do
 
 evalR' (RAndThen r1 r2) state = do
   (amount,state') <- evalR' r1 state
-  let state'' = state' {
-      currentAmount = amount
-  }
+  let state'' = state' { currentAmount = amount }
   evalR' r2 state''
