@@ -113,6 +113,4 @@ evalR' (Rule name expr) state = do
             tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
             return $ state' { currentAmount = amount' }
 
-evalR' (RAndThen r1 r2) state = do
-  state' <- evalR' r1 state
-  evalR' r2 state'
+evalR' (RAndThen r1 r2) state = evalR' r1 state >>= evalR' r2
