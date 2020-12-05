@@ -102,18 +102,16 @@ ruleI r = \amount initKeyValues loaders -> do
 
 -- https://repl.it/@daniel_brannstrom/CredEvalTest#eval.hs
 evalR' :: Rule -> RuleExprEvalState -> WriterT [Decision] IO (Amount,RuleExprEvalState)
-evalR' (Rule name expr) state =  
-    let 
-        expr' = Free.interp ruleExprI expr
-    in do
-        (errorOrAmount,state') <- lift $ runStateT (runExceptT $ runRuleExpr expr') state 
-        case errorOrAmount of
-            (Left str) -> do
-                tell $ [ ("Failed to evaluate rule " ++ name ++ ". " ++ str, currentAmount state, 0) ]
-                return (0,state')
-            (Right amount') -> do 
-                tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
-                return (amount',state')
+evalR' (Rule name expr) state = do
+    let expr' = Free.interp ruleExprI expr
+    (errorOrAmount,state') <- lift $ runStateT (runExceptT $ runRuleExpr expr') state 
+    case errorOrAmount of
+        Left str -> do
+            tell [ ("Failed to evaluate rule " ++ name ++ ". " ++ str, currentAmount state, 0) ]
+            return (0,state')
+        Right amount' -> do 
+            tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
+            return (amount',state')
 
 evalR' (RAndThen r1 r2) state = do
   (amount,state') <- evalR' r1 state
