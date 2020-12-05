@@ -164,8 +164,10 @@ It is important to be able to track changes in the credit evaluation process. Du
 
 # Putting the pieces together
 
-Main.hs in CE-toy defines a number of loaders (all in-memory, trivial ones). The main method applies ruleI to an example credit process called ceProcessExample and retrieves an evaluation function. The evaluation function is the invoked with a sample amount, a national id and the list of loaders.
+Main.hs in CE-toy defines a number of loaders (all in-memory, trivial ones). The main method applies ruleI to an example credit process called ceProcessExample and retrieves an evaluation function. The evaluation function is then invoked with a sample amount, a national id and the list of loaders.
 
 # Limitations and future work
 
 CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought throw nor implemented.
+
+The DSL does not allow for analysis of rule expressions that conditionally retrieves data parameters. Thus this is not allowed. It it unclear if this poses to much of a restriction or if it is acceptable in practice. 
