@@ -6,10 +6,7 @@ import Dsl
 absoluteMaxAmount :: Amount -> RuleExpr Amount
 absoluteMaxAmount amountLimit = do
     amount <- getAmount
-    if amount > amountLimit then 
-        return amountLimit
-    else
-        return amount
+    return $ min amount amountLimit
     
 maxAmountForAge :: Amount -> Age -> RuleExpr Amount
 maxAmountForAge amountLimit ageLimit = do
