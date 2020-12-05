@@ -175,3 +175,5 @@ Executing main will produce the following output:
 CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought through nor implemented.
 
 The DSL does not allow for analysis of rule expressions that conditionally retrieves data parameters. Thus this is not allowed. It it unclear if this poses to much of a restriction or if it is acceptable in practice. This restriction can be removed by implementing conditions in the DSL but that comes with some downsides.
+
+Currently the implementation is done in Haskell. It is good for prototyping but might not be ideal for production. A way forward could be to implement the DSL in F# and the rest in C#.
