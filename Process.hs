@@ -6,12 +6,6 @@ import Prelude
 import Types
 import Dsl
 
-class IfThenElse b where
-  ifThenElse :: b -> RuleExpr a -> RuleExpr a -> RuleExpr a
-
-instance IfThenElse Bool where
-  ifThenElse b t f = ifB b t f
-
 conditionalLookupTest :: Amount -> RuleExpr Amount
 conditionalLookupTest amountLimit = do
     age <- getIntValue "Age"

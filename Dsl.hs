@@ -34,3 +34,8 @@ rule name expr = Rule name expr
 andThen :: Rule -> Rule -> Rule
 andThen r1 r2 = RAndThen r1 r2
 
+class IfThenElse b where
+  ifThenElse :: b -> RuleExpr a -> RuleExpr a -> RuleExpr a
+
+instance IfThenElse Bool where
+  ifThenElse b t f = ifB b t f
