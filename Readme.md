@@ -187,4 +187,26 @@ Executing main will produce the following output:
 
 CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought through nor implemented.
 
-Currently the implementation is done in Haskell. Haskell is a good language for DSL embedding but may be viewed as a bit too esoteric. C#, while widely accepted, is limited when it comes to DSL embedding. It can be done but the result varies. I think F# is a better candidate; but ofcourse, that is a matter of taste. One might consider a scenario where the DSL is written in F# and all the other parts in C#.
+Currently the implementation is done in Haskell. Although Haskell is a good language for DSL embedding it is arguably esoteric. Investigate a C# solution. Have a look at [Sprache](https://github.com/sprache/Sprache). By leveraging linq and expression trees it might be possible to create a dsl where the following would be possible:
+
+```csharp
+class Process
+{
+    public static RuleExpr<int> AbsoluteMaxAmount(int amountLimit)
+    {
+        return
+            from amount in Dsl.GetAmount()
+            select Math.Min(amount, amountLimit);
+    }
+
+    public static RuleExpr<int> MaxTotalDebt(int debtLimit)
+    {
+        return
+            from creditA in Dsl.GetValue("CreditA")
+            from creditB in Dsl.GetValue("CreditB")
+            from amount in Dsl.GetAmount()
+            let totalCredit = creditA + creditB
+            select totalCredit > debtLimit ? 0 : amount;
+    }
+}
+```
