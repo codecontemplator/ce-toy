@@ -125,7 +125,7 @@ ceProcessExample =
 
 ```
 
-It might be worth taking a pause here just to contemplate what we got so far. We have an expressive language that has been bootstrapped from the host language. The rules can be expressed in a terse and clear manner without having to worry about implementation details of how it will be executed.  Moreover, the rules are entirely pure and free of side effects; in fact the rules are just a data structure.
+It might be worth taking a pause here just to contemplate what we got so far. We have an expressive language that has been bootstrapped from the host language. The rules can be expressed in a terse and clear manner without having to worry about implementation details of how it will be executed. Rules are also composable; a chain of rules is just another rule which simplifies reasoning. Moreover, the rules are entirely pure and free of side effects; in fact the rules are just a data structure.
 
 ## Evaluation of rules
 
