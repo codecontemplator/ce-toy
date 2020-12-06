@@ -101,6 +101,16 @@ getAmount :: RuleExpr Amount
 getAmount = liftF $ GetAmount id
 ```
 
+By adding the following trivial rules we can enhance readability.
+
+```haskell
+accept :: RuleExpr Amount
+accept = getAmount
+
+reject :: RuleExpr Amount
+reject = return 0
+```
+
 We can now benefit from the trick used in the definition of the *rule expressions* and build up an entire credit process. It might look something like below.
 
 ```haskell
@@ -114,9 +124,9 @@ maxTotalDebt debtLimit = do
     creditA <- getIntValue "CreditA"
     creditB <- getIntValue "CreditB"
     if creditA + creditB > debtLimit then
-        return 0
+        reject
     else
-        getAmount
+        accept
 
 ceProcessExample :: Rule
 ceProcessExample =
