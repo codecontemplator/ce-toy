@@ -160,13 +160,13 @@ getValue key = do
     case Map.lookup key kvs of
         Just value -> return value
         Nothing -> do
-        ls <- loaders <$> get
-        case ls of
-            [] -> throwError $ "could not produce a value for key " ++ key
-            (l:ls') -> do
-            kvs' <- liftIO $ load l kvs          
-            modify (\s -> s { cache = Map.union kvs kvs', loaders = ls' })
-            getValue key
+            ls <- loaders <$> get
+            case ls of
+                [] -> throwError $ "could not produce a value for key " ++ key
+                (l:ls') -> do
+                    kvs' <- liftIO $ load l kvs          
+                    modify (\s -> s { cache = Map.union kvs kvs', loaders = ls' })
+                    getValue key
 ```
 
 This function store a cache of all known parameters so far and a list of loaders. When a value is requested, the cache will first be queried. If the value exists in the cache the value is simply returned. If not, the first data loader in the list will be executed. The cache will be updated with the new values retrieved and getValue is executed again, recursively.
