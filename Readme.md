@@ -177,6 +177,4 @@ Executing main will produce the following output:
 
 CE-toy only support single applicant scenarios. It seems possible to lift the implementation to handle multiple applicants using a few primitives but this has neither been well thought through nor implemented.
 
-The DSL handles conditional data parameter lookups but it relies on rebindable syntax to achieve this which might cause trouble when porting to less expressive languages.
-
-Currently the implementation is done in Haskell. It is good for prototyping but might not be ideal for production. A way forward could be to implement the DSL in F# and the rest in C#.
+Currently the implementation is done in Haskell. Haskell is a good language for DSL embedding but may be viewed as a bit too esoteric. C#, while widely accepted, is limited when it comes to DSL embedding. It can be done but the result varies. I think F# is a better candidate; but ofcourse, that is a matter of taste. One might consider a scenario where the DSL is written in F# and all the other parts in C#.
