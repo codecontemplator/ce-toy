@@ -27,26 +27,26 @@ maxAmountForAge amountLimit ageLimit = do
     age <- getIntValue "Age"
     amount <- getAmount
     if age > ageLimit && amount > amountLimit then
-        return amountLimit
+        acceptLimit amountLimit
     else
-        return amount
+        accept
     
 maxTotalDebt :: Int -> RuleExpr Amount
 maxTotalDebt debtLimit = do
     creditA <- getIntValue "CreditA"
     creditB <- getIntValue "CreditB"
     if creditA + creditB > debtLimit then
-        return 0
+        reject
     else
-        getAmount
+        accept
 
 hasAddress :: RuleExpr Amount
 hasAddress = do
     address <- getStringValue "Address"
     if address == "" then
-        return 0
+        reject
     else
-        getAmount
+        accept
 
 ceProcessExample :: Rule
 ceProcessExample =

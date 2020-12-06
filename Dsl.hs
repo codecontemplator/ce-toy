@@ -39,3 +39,12 @@ class IfThenElse b where
 
 instance IfThenElse Bool where
   ifThenElse b t f = ifB b t f
+
+accept :: RuleExpr Amount
+accept = getAmount
+
+reject :: RuleExpr Amount
+reject = return 0
+
+acceptLimit :: Amount -> RuleExpr Amount
+acceptLimit limit = return limit
