@@ -13,7 +13,7 @@ These topics are treated in separate sections below. One of the benefits of this
 
 # Loading of a applicant data
 
-Applicant data is often provided by 3rd party services. It is important to keep the requests to a minimum both from a cost perspective but, arguably more important, to avoid an excessive number of lookups for individual customer since such lookups may have a negative impact on their credit score.
+Applicant data is often provided by 3rd party services. It is important to keep the requests to a minimum both from a cost perspective but, arguably more important, to avoid an excessive number of lookups for individual customers since such lookups may have a negative impact on their credit score.
 
 A flora of 3rd party services exists and the datasets are heterogeneous often with overlaps and associated with different costs and different impacts on the customer credit scores. 
 
