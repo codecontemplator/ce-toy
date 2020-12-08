@@ -1,6 +1,6 @@
 # What is CE-toy?
 
-CE-toy is a toy implementation of a credit evaluation service. Credit evaluation is the business process that takes place when one or more applicants apply for a loan (or some other event that require credits). Data about the applicants are retrieved and evaluated according to a fixed framework called an credit process.
+CE-toy is a toy implementation of a credit evaluation service. Credit evaluation is the business process that takes place when one or more applicants apply for a loan (or some other event that require credits). Data about the applicants are retrieved and evaluated according to a fixed framework called a credit process.
 
 # Overall design
 
@@ -13,7 +13,7 @@ These topics are treated in separate sections below. One of the benefits of this
 
 # Loading of a applicant data
 
-Applicant data is often provided by 3rd party services. It is important to keep the requests to a minimum both from a cost perspective but, arguably more important, to avoid an excessive number of lookups for individual customer since such lookups may have a negative impact on their credit score.
+Applicant data is often provided by 3rd party services. It is important to keep the requests to a minimum both from a cost perspective but, arguably more important, to avoid an excessive number of lookups for individual customers since such lookups may have a negative impact on their credit score.
 
 A flora of 3rd party services exists and the datasets are heterogeneous often with overlaps and associated with different costs and different impacts on the customer credit scores. 
 
