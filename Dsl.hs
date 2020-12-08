@@ -8,7 +8,8 @@ import Free
 data RuleExprF a = 
       GetIntValue Key (Int -> a) 
     | GetStringValue Key (String -> a)
-    | GetAmount (Amount -> a)  
+    | GetAmount (Amount -> a)
+    | SetAmount Amount a
     | IfB Bool (RuleExpr a) (RuleExpr a)
         deriving Functor
 
@@ -22,6 +23,9 @@ getStringValue key = liftF $ GetStringValue key id
 
 getAmount :: RuleExpr Amount
 getAmount = liftF $ GetAmount id
+
+setAmount :: Amount -> RuleExpr ()
+setAmount amount = liftF $ SetAmount amount ()
 
 ifB :: Bool -> RuleExpr a -> RuleExpr a -> RuleExpr a
 ifB b t f = liftF $ IfB b t f
@@ -44,7 +48,7 @@ accept :: RuleExpr Amount
 accept = getAmount
 
 reject :: RuleExpr Amount
-reject = return 0
+reject = setAmount 0 >> getAmount
 
 acceptLimit :: Amount -> RuleExpr Amount
-acceptLimit limit = return limit
+acceptLimit limit = setAmount limit >> getAmount

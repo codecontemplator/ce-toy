@@ -73,6 +73,9 @@ ruleExprI (GetStringValue key next) = do
 ruleExprI (GetAmount next) = do
     amount <- getAmount'
     return $ next amount
+ruleExprI (SetAmount amount next) = do
+    modify (\s -> s { currentAmount = amount })
+    return $ next
 ruleExprI (IfB b tNext fNext) = 
     if b then 
         Free.interp ruleExprI tNext
@@ -87,6 +90,7 @@ getRuleExprKeys' (Free f) =
         (GetIntValue key next) -> key : getRuleExprKeys' (next 0)
         (GetStringValue key next) -> key : getRuleExprKeys' (next "")
         (GetAmount next)       -> getRuleExprKeys' (next 0)
+        (SetAmount _ next) -> getRuleExprKeys' next
         (IfB _ tNext fNext) -> getRuleExprKeys' tNext ++ getRuleExprKeys' fNext
 
 getRuleKeys' :: Rule -> [String]
@@ -119,6 +123,6 @@ evalR' (Rule name expr) state = do
             return $ state' { currentAmount = 0}
         Right amount' -> do 
             tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
-            return $ state' { currentAmount = amount' }
+            return $ state' -- { currentAmount = amount' }
 
 evalR' (RAndThen r1 r2) state = evalR' r1 state >>= evalR' r2
