@@ -77,10 +77,7 @@ ruleExprI (SetAmount amount next) = do
     modify (\s -> s { currentAmount = amount })
     return $ next
 ruleExprI (IfB b tNext fNext) = 
-    if b then 
-        Free.interp ruleExprI tNext
-    else 
-        Free.interp ruleExprI fNext
+    interp ruleExprI (if b then tNext else fNext)
 
 -- assumption: process uses rebindable if so that both true and false branches can be analyzed
 getRuleExprKeys' :: RuleExpr a -> [String]
