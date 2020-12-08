@@ -118,8 +118,8 @@ evalR' (Rule name expr) state = do
         Left str -> do
             tell [ ("Failed to evaluate rule " ++ name ++ ". " ++ str, currentAmount state, 0) ]
             return $ state' { currentAmount = 0}
-        Right _ -> do 
-            tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, currentAmount state') ]
-            return $ state'
+        Right amount' -> do 
+            tell [ ("Rule evaluated " ++ name ++ ".", currentAmount state, amount') ]
+            return $ state' { currentAmount = amount' }
 
 evalR' (RAndThen r1 r2) state = evalR' r1 state >>= evalR' r2
