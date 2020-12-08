@@ -11,16 +11,16 @@ conditionalLookupTest amountLimit = do
     age <- getIntValue "Age"
     if age < 20 then do
         amount <- getAmount
-        return $ min amount amountLimit
+        acceptLimit $ min amount amountLimit
     else do
         name <- getStringValue "Name"
         amount <- getAmount
-        return $ amount + length name + 123
+        acceptLimit $ amount + length name + 123
 
 absoluteMaxAmount :: Amount -> RuleExpr Amount
 absoluteMaxAmount amountLimit = do
     amount <- getAmount
-    return $ min amount amountLimit
+    acceptLimit $ min amount amountLimit
     
 maxAmountForAge :: Amount -> Age -> RuleExpr Amount
 maxAmountForAge amountLimit ageLimit = do
